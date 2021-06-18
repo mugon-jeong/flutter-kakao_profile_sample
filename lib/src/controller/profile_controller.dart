@@ -31,6 +31,7 @@ class ProfileController extends GetxController {
   }
 
   void rollback() {
+    myProfile.value.initImageFile();
     myProfile(originMyProfile);
     toggleEditProfile();
   }
@@ -49,20 +50,24 @@ class ProfileController extends GetxController {
 
   Future<void> pickImage(ProfileImageType type) async {
     if (!isEditMyProfile.value) return;
+    File file = await ImageCropController.to.selectImage();
     switch (type) {
       case ProfileImageType.THUMBNAIL:
-        File file = await ImageCropController.to.selectImage();
         myProfile.update((val) {
           val!.avatarFile = file;
         });
 
         break;
       case ProfileImageType.BACKGROUND:
-        File file = await ImageCropController.to.selectImage();
         myProfile.update((val) {
           val!.backgroundFile = file;
         });
         break;
     }
+  }
+
+  void save() {
+    originMyProfile = myProfile.value;
+    toggleEditProfile();
   }
 }

@@ -275,7 +275,7 @@ class Profile extends GetView<ProfileController> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        print("프로필 편집 저장");
+                        controller.save();
                       },
                       child: Text(
                         '완료',
