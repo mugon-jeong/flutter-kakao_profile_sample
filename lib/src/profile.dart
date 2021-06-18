@@ -123,13 +123,13 @@ class Profile extends GetView<ProfileController> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Text(
-            '개발하는 남자',
+            controller.myProfile.value.name as String,
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.w400, color: Colors.white),
           ),
         ),
         Text(
-          '구독과 좋아요',
+          controller.myProfile.value.discription as String,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: Colors.white),
         ),
@@ -236,39 +236,58 @@ class Profile extends GetView<ProfileController> {
       top: Get.mediaQuery.padding.top,
       left: 0,
       right: 0,
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () {
-                controller.toggleEditProfile();
-              },
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  Text(
-                    '프로필 편집',
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                print("프로필 편집 저장");
-              },
-              child: Text(
-                '완료',
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-            ),
-          ],
+      child: Obx(
+        () => Container(
+          padding: const EdgeInsets.all(15),
+          child: controller.isEditMyProfile.value
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        controller.rollback();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          Text(
+                            '프로필 편집',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        print("프로필 편집 저장");
+                      },
+                      child: Text(
+                        '완료',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.close_sharp,
+                      color: Colors.white,
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.qr_code, color: Colors.white),
+                        SizedBox(width: 10),
+                        Icon(Icons.settings, color: Colors.white),
+                      ],
+                    )
+                  ],
+                ),
         ),
       ),
     );

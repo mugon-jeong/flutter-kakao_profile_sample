@@ -20,4 +20,16 @@ class UserModel {
     this.createdTime,
     this.lastLoginTime,
   });
+
+  UserModel.clone(UserModel user)
+      : this(
+          uid: user.uid,
+          docId: user.docId,
+          name: user.name,
+          discription: user.discription,
+          avatarUrl: user.avatarUrl,
+          backgroundUrl: user.backgroundUrl,
+          lastLoginTime: user.lastLoginTime,
+          createdTime: user.createdTime,
+        );
 }

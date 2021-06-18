@@ -4,19 +4,29 @@ import 'package:kakao_sample_profile/src/model/user_model.dart';
 
 class ProfileController extends GetxController {
   RxBool isEditMyProfile = false.obs;
-  Rx<UserModel> myProfile = UserModel(
+  UserModel originMyProfile = UserModel(
     name: "개발하는 남자",
     discription: "구독과 좋아요",
-  ).obs;
+  );
+  Rx<UserModel> myProfile = UserModel().obs;
   @override
   void onInit() {
     // TODO: implement onInit
     isEditMyProfile(false);
+    // myProfile에는 originMyProfile의 주소값이 들어가고 업데이트할때 myProfile의 데이터가 업데이트되는 것이 아니라 origin이 업데이트됨
+    // 그렇기에 clone이 필
+    // myProfile(originMyProfile);
+    myProfile(UserModel.clone(originMyProfile));
     super.onInit();
   }
 
   void toggleEditProfile() {
     isEditMyProfile(!isEditMyProfile.value);
+  }
+
+  void rollback() {
+    myProfile(originMyProfile);
+    toggleEditProfile();
   }
 
   void updateName(String updateName) {
