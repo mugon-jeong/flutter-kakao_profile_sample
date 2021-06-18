@@ -50,7 +50,7 @@ class ProfileController extends GetxController {
 
   Future<void> pickImage(ProfileImageType type) async {
     if (!isEditMyProfile.value) return;
-    File file = await ImageCropController.to.selectImage();
+    File? file = await ImageCropController.to.selectImage(type);
     switch (type) {
       case ProfileImageType.THUMBNAIL:
         myProfile.update((val) {
