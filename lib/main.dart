@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
+import 'package:kakao_sample_profile/src/controller/image_crop_controller.dart';
 import 'package:kakao_sample_profile/src/controller/profile_controller.dart';
 import 'package:kakao_sample_profile/src/profile.dart';
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(primaryColor: Colors.deepOrange),
       initialBinding: BindingsBuilder(() {
         Get.lazyPut(() => ProfileController());
+        Get.lazyPut(() => ImageCropController());
       }),
       home: Profile(),
     );

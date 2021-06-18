@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_sample_profile/src/components/text_editor_widget.dart';
@@ -138,43 +140,53 @@ class Profile extends GetView<ProfileController> {
   }
 
   Widget _profileImage() {
-    return Container(
-      width: 120,
-      height: 120,
-      child: Stack(
-        children: [
-          Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: Container(
-                width: 100,
-                height: 100,
-                child: Image.network(
-                  'https://i.stack.imgur.com/l60Hf.png',
-                  fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        controller.pickImage();
+      },
+      child: Container(
+        width: 120,
+        height: 120,
+        child: Stack(
+          children: [
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  child: controller.myProfile.value.avatarFile == null
+                      ? Image.network(
+                          'https://i.stack.imgur.com/l60Hf.png',
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          controller.myProfile.value.avatarFile as File,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
             ),
-          ),
-          controller.isEditMyProfile.value
-              ? Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    alignment: Alignment.bottomRight,
+            controller.isEditMyProfile.value
+                ? Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
                     child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Icon(Icons.camera_alt),
                       ),
-                      child: Icon(Icons.camera_alt),
-                    ),
-                  ))
-              : Container()
-        ],
+                    ))
+                : Container()
+          ],
+        ),
       ),
     );
   }

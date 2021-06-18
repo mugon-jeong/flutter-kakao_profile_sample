@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:kakao_sample_profile/src/model/user_model.dart';
+
+import 'image_crop_controller.dart';
 
 class ProfileController extends GetxController {
   RxBool isEditMyProfile = false.obs;
@@ -39,5 +43,14 @@ class ProfileController extends GetxController {
     myProfile.update((my) {
       my!.discription = updateDiscription;
     });
+  }
+
+  Future<void> pickImage() async {
+    if (isEditMyProfile.value) {
+      File file = await ImageCropController.to.selectImage();
+      myProfile.update((val) {
+        val!.avatarFile = file;
+      });
+    }
   }
 }
