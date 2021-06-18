@@ -27,14 +27,69 @@ class Profile extends GetView<ProfileController> {
       bottom: 120,
       left: 0,
       right: 0,
-      child: Container(
-        height: 200,
-        child: Column(
-          children: [
-            _profileImage(),
-            _profileInfo(),
-          ],
+      child: Obx(
+        () => Container(
+          height: 220,
+          child: Column(
+            children: [
+              _profileImage(),
+              controller.isEditMyProfile.value
+                  ? _editProfileInfo()
+                  : _profileInfo(),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _editProfileInfo() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        children: [
+          _partProfileInfo('개발하는 남자', () {}),
+          _partProfileInfo('구독과 좋아요', () {}),
+        ],
+      ),
+    );
+  }
+
+  Widget _partProfileInfo(String value, Function ontap) {
+    return GestureDetector(
+      onTap: () => ontap(),
+      child: Stack(
+        children: [
+          Container(
+            height: 40,
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+              color: Colors.white,
+              width: 1,
+            ))),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Text(
+                value,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white),
+              ),
+            ),
+          ),
+          Positioned(
+              right: 0,
+              bottom: 15,
+              child: Icon(
+                Icons.edit,
+                color: Colors.white,
+                size: 18,
+              ))
+        ],
       ),
     );
   }
@@ -63,12 +118,40 @@ class Profile extends GetView<ProfileController> {
     return Container(
       width: 120,
       height: 120,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(40),
-        child: Image.network(
-          'https://i.stack.imgur.com/l60Hf.png',
-          fit: BoxFit.cover,
-        ),
+      child: Stack(
+        children: [
+          Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: Container(
+                width: 100,
+                height: 100,
+                child: Image.network(
+                  'https://i.stack.imgur.com/l60Hf.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          controller.isEditMyProfile.value
+              ? Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: Icon(Icons.camera_alt),
+                    ),
+                  ))
+              : Container()
+        ],
       ),
     );
   }
