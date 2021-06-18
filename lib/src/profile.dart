@@ -142,7 +142,7 @@ class Profile extends GetView<ProfileController> {
   Widget _profileImage() {
     return GestureDetector(
       onTap: () {
-        controller.pickImage();
+        controller.pickImage(ProfileImageType.THUMBNAIL);
       },
       child: Container(
         width: 120,
@@ -313,10 +313,17 @@ class Profile extends GetView<ProfileController> {
       left: 0,
       child: GestureDetector(
         child: Container(
-          color: Colors.transparent,
-        ),
+            color: Colors.transparent,
+            child: Obx(() => Container(
+                  child: controller.myProfile.value.backgroundFile == null
+                      ? Container()
+                      : Image.file(
+                          controller.myProfile.value.backgroundFile as File,
+                          fit: BoxFit.cover,
+                        ),
+                ))),
         onTap: () {
-          print("change my backgroundImage");
+          controller.pickImage(ProfileImageType.BACKGROUND);
         },
       ),
     );

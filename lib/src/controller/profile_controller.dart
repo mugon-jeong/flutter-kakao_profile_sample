@@ -6,6 +6,8 @@ import 'package:kakao_sample_profile/src/model/user_model.dart';
 
 import 'image_crop_controller.dart';
 
+enum ProfileImageType { THUMBNAIL, BACKGROUND }
+
 class ProfileController extends GetxController {
   RxBool isEditMyProfile = false.obs;
   UserModel originMyProfile = UserModel(
@@ -45,12 +47,22 @@ class ProfileController extends GetxController {
     });
   }
 
-  Future<void> pickImage() async {
-    if (isEditMyProfile.value) {
-      File file = await ImageCropController.to.selectImage();
-      myProfile.update((val) {
-        val!.avatarFile = file;
-      });
+  Future<void> pickImage(ProfileImageType type) async {
+    if (!isEditMyProfile.value) return;
+    switch (type) {
+      case ProfileImageType.THUMBNAIL:
+        File file = await ImageCropController.to.selectImage();
+        myProfile.update((val) {
+          val!.avatarFile = file;
+        });
+
+        break;
+      case ProfileImageType.BACKGROUND:
+        File file = await ImageCropController.to.selectImage();
+        myProfile.update((val) {
+          val!.backgroundFile = file;
+        });
+        break;
     }
   }
 }
