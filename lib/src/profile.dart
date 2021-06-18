@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kakao_sample_profile/src/components/text_editor_widget.dart';
 import 'package:kakao_sample_profile/src/controller/profile_controller.dart';
 
 class Profile extends GetView<ProfileController> {
@@ -8,6 +9,8 @@ class Profile extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 키패드 올라올때 레이아웃 변경 막기
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xff3f3f3f),
       body: Container(
         child: Stack(
@@ -46,11 +49,31 @@ class Profile extends GetView<ProfileController> {
   Widget _editProfileInfo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        children: [
-          _partProfileInfo('개발하는 남자', () {}),
-          _partProfileInfo('구독과 좋아요', () {}),
-        ],
+      child: Obx(
+        () => Column(
+          children: [
+            _partProfileInfo(
+              controller.myProfile.value.name!,
+              () async {
+                String value = await Get.dialog(
+                    TextEditorWidget(text: controller.myProfile.value.name));
+                if (value != null) {
+                  controller.updateName(value);
+                }
+              },
+            ),
+            _partProfileInfo(
+              controller.myProfile.value.discription!,
+              () async {
+                String value = await Get.dialog(TextEditorWidget(
+                    text: controller.myProfile.value.discription));
+                if (value != null) {
+                  controller.updateDiscription(value);
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
