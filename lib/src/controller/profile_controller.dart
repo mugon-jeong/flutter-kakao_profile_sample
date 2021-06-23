@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:kakao_sample_profile/src/model/user_model.dart';
 import 'package:kakao_sample_profile/src/repository/firebase_user_repository.dart';
+import 'package:kakao_sample_profile/src/repository/firestorage_repository.dart';
 
 import 'image_crop_controller.dart';
 
@@ -16,6 +18,7 @@ class ProfileController extends GetxController {
   RxBool isEditMyProfile = false.obs;
   UserModel originMyProfile = UserModel();
   Rx<UserModel> myProfile = UserModel().obs;
+  FirestorageRepository _firestorageRepository = FirestorageRepository();
 
   void authStateChanges(User firebaseUser) async {
     UserModel? userModel =
@@ -89,8 +92,51 @@ class ProfileController extends GetxController {
     }
   }
 
+  void _updateProfileImageUrl(String downloadUrl) {
+    originMyProfile.avatarUrl = downloadUrl;
+    myProfile.update((user) => user!.avatarUrl = downloadUrl);
+  }
+
+  void _updateBackgroundImageUrl(String downloadUrl) {
+    originMyProfile.backgroundUrl = downloadUrl;
+    myProfile.update((user) => user!.backgroundUrl = downloadUrl);
+  }
+
   void save() {
     originMyProfile = myProfile.value;
+
+    //crop image upload
+    if (originMyProfile.avatarFile != null) {
+      UploadTask task = _firestorageRepository.uploadImageFile(
+          originMyProfile.uid as String,
+          "profile",
+          originMyProfile.avatarFile as File);
+      task.snapshotEvents.listen((event) async {
+        if (event.bytesTransferred == event.totalBytes) {
+          String downloadUrl = await event.ref.getDownloadURL();
+          _updateProfileImageUrl(downloadUrl);
+          FirebaseUserRepository.updateImageUrl(
+              originMyProfile.docId as String, downloadUrl, "avatar_url");
+        }
+      });
+    }
+
+    // background image upload
+    if (originMyProfile.backgroundFile != null) {
+      UploadTask task = _firestorageRepository.uploadImageFile(
+          originMyProfile.uid as String,
+          "background",
+          originMyProfile.backgroundFile as File);
+      task.snapshotEvents.listen((event) async {
+        if (event.bytesTransferred == event.totalBytes) {
+          String downloadUrl = await event.ref.getDownloadURL();
+          _updateBackgroundImageUrl(downloadUrl);
+          FirebaseUserRepository.updateImageUrl(
+              originMyProfile.docId as String, downloadUrl, "background_url");
+        }
+      });
+    }
+
     FirebaseUserRepository.updateData(
         originMyProfile.docId as String, originMyProfile);
     toggleEditProfile();

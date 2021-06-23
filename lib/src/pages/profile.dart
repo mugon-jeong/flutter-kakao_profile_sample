@@ -13,7 +13,7 @@ class Profile extends GetView<ProfileController> {
     return Scaffold(
       // 키패드 올라올때 레이아웃 변경 막기
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xff3f3f3f),
+      backgroundColor: Colors.black,
       body: Container(
         child: Stack(
           children: [
@@ -330,6 +330,26 @@ class Profile extends GetView<ProfileController> {
     );
   }
 
+  // 수정 중인 상태
+  Widget _editBackgroundImageWidget() {
+    return controller.myProfile.value.backgroundFile == null
+        ? _backgroundImageWidget()
+        : Image.file(
+            controller.myProfile.value.backgroundFile as File,
+            fit: BoxFit.cover,
+          );
+  }
+
+  // 초기 상태
+  Widget _backgroundImageWidget() {
+    return controller.myProfile.value.backgroundUrl == null
+        ? Container()
+        : Image.network(
+            controller.myProfile.value.backgroundUrl as String,
+            fit: BoxFit.cover,
+          );
+  }
+
   Widget _backgoundImage() {
     return Positioned(
       top: 0,
@@ -339,13 +359,18 @@ class Profile extends GetView<ProfileController> {
       child: GestureDetector(
         child: Container(
             color: Colors.transparent,
-            child: Obx(() => Container(
-                  child: controller.myProfile.value.backgroundFile == null
-                      ? Container()
-                      : Image.file(
-                          controller.myProfile.value.backgroundFile as File,
-                          fit: BoxFit.cover,
-                        ),
+            child: Obx(() => Opacity(
+                  opacity: 0.5,
+                  child: Container(
+                    child: controller.isEditMyProfile.value
+                        ? _editBackgroundImageWidget()
+                        : _backgroundImageWidget(),
+                    // ? Container()
+                    // : Image.file(
+                    //     controller.myProfile.value.backgroundFile as File,
+                    //     fit: BoxFit.cover,
+                    //   ),
+                  ),
                 ))),
         onTap: () {
           controller.pickImage(ProfileImageType.BACKGROUND);
