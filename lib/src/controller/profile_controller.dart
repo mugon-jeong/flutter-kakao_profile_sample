@@ -1,20 +1,46 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:kakao_sample_profile/src/model/user_model.dart';
+import 'package:kakao_sample_profile/src/repository/firebase_user_repository.dart';
 
 import 'image_crop_controller.dart';
 
 enum ProfileImageType { THUMBNAIL, BACKGROUND }
 
 class ProfileController extends GetxController {
+  static ProfileController get to => Get.find();
   RxBool isEditMyProfile = false.obs;
-  UserModel originMyProfile = UserModel(
-    name: "개발하는 남자",
-    discription: "구독과 좋아요",
-  );
+  UserModel originMyProfile = UserModel();
   Rx<UserModel> myProfile = UserModel().obs;
+
+  void authStateChange(User firebasUser) async {
+    if (firebasUser != null) {
+      // uid를 통해 중복 sinup 방지
+      UserModel? userModel =
+          await FirebaseUserRepository.findUserByUid(firebasUser.uid);
+      if (userModel != null) {
+        FirebaseUserRepository.updateLastLoginDate(
+            userModel.docId as String, DateTime.now());
+      } else {
+        originMyProfile = UserModel(
+          uid: firebasUser.uid,
+          name: firebasUser.displayName,
+          avatarUrl: firebasUser.photoURL,
+          createdTime: DateTime.now(),
+          lastLoginTime: DateTime.now(),
+        );
+        // db insert
+        String docId = await FirebaseUserRepository.singup(originMyProfile);
+        originMyProfile.docId = docId;
+      }
+    }
+    myProfile(UserModel.clone(originMyProfile));
+  }
+
   @override
   void onInit() {
     // TODO: implement onInit
@@ -22,7 +48,7 @@ class ProfileController extends GetxController {
     // myProfile에는 originMyProfile의 주소값이 들어가고 업데이트할때 myProfile의 데이터가 업데이트되는 것이 아니라 origin이 업데이트됨
     // 그렇기에 clone이 필
     // myProfile(originMyProfile);
-    myProfile(UserModel.clone(originMyProfile));
+    // myProfile(UserModel.clone(originMyProfile));
     super.onInit();
   }
 

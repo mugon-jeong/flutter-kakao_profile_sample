@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kakao_sample_profile/src/controller/profile_controller.dart';
 import 'package:kakao_sample_profile/src/pages/login.dart';
 import 'package:kakao_sample_profile/src/pages/profile.dart';
 
@@ -11,6 +12,7 @@ class Home extends StatelessWidget {
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        ProfileController.to.authStateChange(snapshot.data as User);
         if (!snapshot.hasData) {
           return Login();
         } else {
