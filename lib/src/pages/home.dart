@@ -12,7 +12,7 @@ class Home extends StatelessWidget {
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-        ProfileController.to.authStateChange(snapshot.data as User);
+        ProfileController.to.authStateChanges(snapshot.data as User);
         if (!snapshot.hasData) {
           return Login();
         } else {

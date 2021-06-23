@@ -139,6 +139,29 @@ class Profile extends GetView<ProfileController> {
     );
   }
 
+  // 수정 중인 상태
+  Widget _editProfileImageWidget() {
+    return controller.myProfile.value.avatarFile == null
+        ? _profileImageWidget()
+        : Image.file(
+            controller.myProfile.value.avatarFile as File,
+            fit: BoxFit.cover,
+          );
+  }
+
+  // 초기 상태
+  Widget _profileImageWidget() {
+    return controller.myProfile.value.avatarUrl == null
+        ? Image.network(
+            'https://i.stack.imgur.com/l60Hf.png',
+            fit: BoxFit.cover,
+          )
+        : Image.file(
+            controller.myProfile.value.avatarFile as File,
+            fit: BoxFit.cover,
+          );
+  }
+
   Widget _profileImage() {
     return GestureDetector(
       onTap: () {
@@ -155,15 +178,17 @@ class Profile extends GetView<ProfileController> {
                 child: Container(
                   width: 100,
                   height: 100,
-                  child: controller.myProfile.value.avatarFile == null
-                      ? Image.network(
-                          'https://i.stack.imgur.com/l60Hf.png',
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
-                          controller.myProfile.value.avatarFile as File,
-                          fit: BoxFit.cover,
-                        ),
+                  child: controller.isEditMyProfile.value
+                      ? _editProfileImageWidget()
+                      : _profileImageWidget(),
+                  // ? Image.network(
+                  //     'https://i.stack.imgur.com/l60Hf.png',
+                  //     fit: BoxFit.cover,
+                  //   )
+                  // : Image.file(
+                  //     controller.myProfile.value.avatarFile as File,
+                  //     fit: BoxFit.cover,
+                  //   ),
                 ),
               ),
             ),

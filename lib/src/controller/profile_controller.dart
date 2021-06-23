@@ -17,26 +17,23 @@ class ProfileController extends GetxController {
   UserModel originMyProfile = UserModel();
   Rx<UserModel> myProfile = UserModel().obs;
 
-  void authStateChange(User firebasUser) async {
-    if (firebasUser != null) {
-      // uid를 통해 중복 sinup 방지
-      UserModel? userModel =
-          await FirebaseUserRepository.findUserByUid(firebasUser.uid);
-      if (userModel != null) {
-        FirebaseUserRepository.updateLastLoginDate(
-            userModel.docId as String, DateTime.now());
-      } else {
-        originMyProfile = UserModel(
-          uid: firebasUser.uid,
-          name: firebasUser.displayName,
-          avatarUrl: firebasUser.photoURL,
-          createdTime: DateTime.now(),
-          lastLoginTime: DateTime.now(),
-        );
-        // db insert
-        String docId = await FirebaseUserRepository.singup(originMyProfile);
-        originMyProfile.docId = docId;
-      }
+  void authStateChanges(User firebaseUser) async {
+    UserModel? userModel =
+        await FirebaseUserRepository.findUserByUid(firebaseUser.uid);
+    if (userModel != null) {
+      originMyProfile = userModel;
+      FirebaseUserRepository.updateLastLoginDate(
+          userModel.docId as String, DateTime.now());
+    } else {
+      originMyProfile = UserModel(
+        uid: firebaseUser.uid,
+        name: firebaseUser.displayName,
+        avatarUrl: firebaseUser.photoURL,
+        createdTime: DateTime.now(),
+        lastLoginTime: DateTime.now(),
+      );
+      String docId = await FirebaseUserRepository.singup(originMyProfile);
+      originMyProfile.docId = docId;
     }
     myProfile(UserModel.clone(originMyProfile));
   }
@@ -94,6 +91,8 @@ class ProfileController extends GetxController {
 
   void save() {
     originMyProfile = myProfile.value;
+    FirebaseUserRepository.updateData(
+        originMyProfile.docId as String, originMyProfile);
     toggleEditProfile();
   }
 }
